@@ -39,7 +39,7 @@ if(isset($_POST['edit'])) {
     $fz= $_POST ['fz'];
     $rpm= $_POST ['rpm'];
 
-    echo $id_material." ".$doc." ".$dia_cutter." ".$loc." ".$n." ".$fz." ".$rpm;
+    // echo $id_material." ".$doc." ".$dia_cutter." ".$loc." ".$n." ".$fz." ".$rpm;
     mysqli_query($con, "INSERT INTO `datapemotongan`(`id_material`, `doc`, `dia_cutter`, `loc`, `n`, `fz`, `rpm`) VALUES ('$id_material','$doc', '$dia_cutter','$loc','$n', '$fz', '$rpm')") or die (mysqli_error($con));
     echo "<script>window.location='data.php';</script>";
 

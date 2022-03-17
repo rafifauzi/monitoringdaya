@@ -50,7 +50,8 @@ $treshold = mysqli_fetch_array($sql_treshold);
 							
 							?>
 			<?php
-            $sql_potong = mysqli_query($con, "SELECT * FROM datapemotongan") or die (mysqli_error($con));
+            
+            $sql_potong = mysqli_query($con,"SELECT * FROM `datapemotongan` WHERE Nawa IN (SELECT MAX(Nawa) FROM `datapemotongan`)") or die (mysqli_error($con));
             $data = mysqli_fetch_array($sql_potong);
             
             $mrr= $data['dia_cutter']*$data['doc']*$data['fz']*$data['rpm']*$data['n'];
