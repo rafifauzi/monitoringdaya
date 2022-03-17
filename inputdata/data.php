@@ -51,15 +51,11 @@ $treshold = mysqli_fetch_array($sql_treshold);
 							?>
 			<?php
             
-            $sql_potong = mysqli_query($con,"SELECT * FROM `datapemotongan` WHERE Nawa IN (SELECT MAX(Nawa) FROM `datapemotongan`)") or die (mysqli_error($con));
+            $sql_potong = mysqli_query($con,"SELECT * FROM `datapemotongan` JOIN datamaterial WHERE datapemotongan.id_material=datamaterial.ID AND Nawa IN (SELECT MAX(Nawa) FROM `datapemotongan`);") or die (mysqli_error($con));
             $data = mysqli_fetch_array($sql_potong);
             
             $mrr= $data['dia_cutter']*$data['doc']*$data['fz']*$data['rpm']*$data['n'];
             ?>
-
-            <?php
-            $sql_material = mysqli_query($con, "SELECT * FROM datamaterial") or die (mysqli_error($con));
-            $data_material = mysqli_fetch_array($sql_material);?>
         <table class="text-center table table-striped table-bordered table-hover"  align="center">
             <tr >
                 <th class="text-center">Power Realtime</th>
@@ -76,7 +72,7 @@ $treshold = mysqli_fetch_array($sql_treshold);
                 <th class="text-center">Spesifik Energi Material</th>
             </tr>
             <tr >
-                <td><?=$data_material['Spesifik_Energi']?></td>
+                <td><?=$data['Spesifik_Energi']?></td>
             </tr>
         </table>
         <br>
@@ -142,10 +138,10 @@ $treshold = mysqli_fetch_array($sql_treshold);
             </tr>
             <tr >
                 <td><?=$mrr?></td>
-                <td><?=($mrr*$data_material['Spesifik_Energi'])/60?></td>
+                <td><?=($mrr*$data['Spesifik_Energi'])/60?></td>
 
                 <?php
-                $dayacutting = ($mrr*$data_material['Spesifik_Energi'])/60; ?>
+                $dayacutting = ($mrr*$data['Spesifik_Energi'])/60; ?>
             </tr>
         </table>
     </div>
