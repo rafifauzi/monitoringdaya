@@ -3,7 +3,6 @@ $json_data = include ('database.php');
 ?>
 
 <head>
-	<meta http-equiv="refresh" content="5">
 </head>
 
 <?php
@@ -83,7 +82,6 @@ $json_data = include ('database.php');
 		<div>
 			<div id="data_monitoring"  style="float: left;width:100%"></div>
 		</div>			
-		
 		<div>
 		
 			<div style="float: left;width:50%;">
@@ -164,11 +162,13 @@ $json_data = include ('database.php');
 </div>
 </div>
 
+
 <script src="../assets/highcharts/highcharts.js"></script>
 <script src="../assets/highcharts/series-label.js"></script>
 <script src="../assets/highcharts/exporting.js"></script>
 <script src="../assets/highcharts/export-data.js"></script>
 <script src="../assets/highcharts/accessibility.js"></script>
+
 <script type="text/javascript">
 
 Highcharts.chart('data_monitoring', {
@@ -184,7 +184,7 @@ Highcharts.chart('data_monitoring', {
 		
     },
     title: {
-        text: 'Machine Power Consumption Monitoring',
+        text: 'Machine Power Consumption Monitoring Pada Tanggal <?=$dateNow=date("d-m-Y");?>',
         align: 'center'
     },
     subtitle: {
@@ -194,7 +194,7 @@ Highcharts.chart('data_monitoring', {
     xAxis: {
         type: 'datetime',
         labels: {
-			rotation: -30
+			rotation: 0
         },
     },
     yAxis: [
@@ -206,7 +206,7 @@ Highcharts.chart('data_monitoring', {
 		plotBands: [{ // Mesin Ready
             from: <?= $treshold['th_mesin_ready'] ?>,
             to: <?= $treshold['th_spindel_on'] ?>,
-            color: 'rgb(124, 252, 2)',
+            color: 'rgb(124, 252, 22)',
             label: {
                 text: 'Mesin Ready',
                 style: {

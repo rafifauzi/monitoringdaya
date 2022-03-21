@@ -44,8 +44,13 @@ require_once "../config/config.php";
 		$sql = "UPDATE `tabel_mesin` SET `status` = '1' WHERE `tabel_mesin`.`ID_mesin` = 1";
 	}
 
-    $sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "'";
+	// $sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "'";
+	// $result = $con->query($sql);
+	$dateNow=date("Y-m-d");	
+	$dateNow1='2022-03-06';
+    $sql = "SELECT * FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$dateNow1' AND `ID_mesin`='" . $mesin . "'";
     $result = $con->query($sql);
+
 	
 	$currentArr = array('name' => 'Current', 'valueSuffix' => '{value} A');
 	$voltageArr = array('name' => 'Voltage', 'valueSuffix' => '{value} V', 'yAxis' => 1,);
