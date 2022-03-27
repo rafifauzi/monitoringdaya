@@ -47,8 +47,19 @@ require_once "../config/config.php";
 	// $sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "'";
 	// $result = $con->query($sql);
 	$dateNow=date("Y-m-d");	
-	$dateNow1='2022-03-06';
-    $sql = "SELECT * FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$dateNow1' AND `ID_mesin`='" . $mesin . "'";
+	$dateNow1='2022-02-22';
+
+	if (!isset($_SESSION['waktuTerakhir'])) {
+		$getTimeMonitoring=mysqli_query($con, "SELECT MAX(Date_Time) as 'lastTime' FROM tabel_monitoring WHERE `ID_mesin`='1'");
+		$timeMonitoring=mysqli_fetch_array($getTimeMonitoring);
+		$waktuTerakhir=substr($timeMonitoring['lastTime'],0,10);
+	}else{
+		$waktuTerakhir=$_SESSION['waktuTerakhir'];
+	}
+
+	//getlasttime
+	
+    $sql = "SELECT * FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$waktuTerakhir' AND `ID_mesin`='" . $mesin . "'";
     $result = $con->query($sql);
 
 	
