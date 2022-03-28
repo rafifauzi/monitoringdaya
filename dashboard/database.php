@@ -46,20 +46,21 @@ require_once "../config/config.php";
 
 	// $sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "'";
 	// $result = $con->query($sql);
-	$dateNow=date("Y-m-d");	
-	$dateNow1='2022-02-22';
-
-	if (!isset($_SESSION['waktuTerakhir'])) {
+		
+		
 		$getTimeMonitoring=mysqli_query($con, "SELECT MAX(Date_Time) as 'lastTime' FROM tabel_monitoring WHERE `ID_mesin`='1'");
 		$timeMonitoring=mysqli_fetch_array($getTimeMonitoring);
-		$waktuTerakhir=substr($timeMonitoring['lastTime'],0,10);
-	}else{
-		$waktuTerakhir=$_SESSION['waktuTerakhir'];
-	}
+		
+
+		if (isset($_GET['waktu'])){
+			$waktuTerakhir=$_GET['waktu'];
+		}else{
+			$waktuTerakhir=substr($timeMonitoring['lastTime'],0,10);
+		}
 
 	//getlasttime
 	
-    $sql = "SELECT * FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$waktuTerakhir' AND `ID_mesin`='" . $mesin . "'";
+    $sql = "SELECT * FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$waktuTerakhir' AND `ID_mesin`='$mesin' ORDER BY Date_Time DESC LIMIT 120";
     $result = $con->query($sql);
 
 	

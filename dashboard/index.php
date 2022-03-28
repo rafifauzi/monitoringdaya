@@ -1,5 +1,4 @@
 <?php include_once('../header.php');
-$json_data = include('database.php');
 ?>
 
 <!-- <head>
@@ -13,16 +12,32 @@ if (isset($_GET['waktu'])) {
 	$ceksql = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$getTime'");
 	$row = mysqli_num_rows($ceksql);
 
-	$getTimeMonitoring = mysqli_query($con, "SELECT MAX(Date_Time) as 'lastTime' FROM tabel_monitoring WHERE `ID_mesin`='1'");
-	$timeMonitoring = mysqli_fetch_array($getTimeMonitoring);
-	$waktuTerakhir = $timeMonitoring['lastTime'];
 	if ($row > 0) {
-		$_SESSION['waktuTerakhir'] = $getTime;		
+		$json_data = include('database.php');		
 	} else {
-		echo "Tidak Ada Data";
+		echo "<script>alert('Data Tidak Ada'); window.location.replace('".base_url('dashboard')."');</script>";	
 	}
 
+	
+	
+
+	$getTimeMonitoring = mysqli_query($con, "SELECT MAX(Date_Time) as 'lastTime' FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$getTime' AND `ID_mesin`='1'");
+	$timeMonitoring = mysqli_fetch_array($getTimeMonitoring);
+	$waktuTerakhir = $timeMonitoring['lastTime'];
+
+	$sql_treshold = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE `status` = '1' && `ID_mesin` = '$mesin'") or die(mysqli_error($con));
+	$treshold = mysqli_fetch_array($sql_treshold);
+	
+	$sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin` = '$mesin' AND `Date_Time` = '$waktuTerakhir'";
+	$query = mysqli_query($con, $sql);
+	$data = mysqli_fetch_array($query);
+	$sql_treshold = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE `status` = '1' && `ID_mesin` = '$mesin';") or die(mysqli_error($con));
+	$treshold = mysqli_fetch_array($sql_treshold);
+	
+
 } else {
+	
+	$json_data = include('database.php');
 	$sql = "SELECT MAX(Date_Time) FROM tabel_monitoring WHERE `ID_mesin`='1'";
 	$result = $con->query($sql);
 	if ($result->num_rows > 0) {
@@ -33,14 +48,15 @@ if (isset($_GET['waktu'])) {
 	$getTimeMonitoring = mysqli_query($con, "SELECT MAX(Date_Time) as 'lastTime' FROM tabel_monitoring WHERE `ID_mesin`='1'");
 	$timeMonitoring = mysqli_fetch_array($getTimeMonitoring);
 	$waktuTerakhir = $timeMonitoring['lastTime'];
-	$getTime = '';
+	$getTime = substr($timeMonitoring['lastTime'],0,10);;
+
+	$sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin` = '$mesin' AND `Date_Time` = '$waktuTerakhir'";
+	$query = mysqli_query($con, $sql);
+	$data = mysqli_fetch_array($query);
+	$sql_treshold = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE `status` = '1' && `ID_mesin` = '$mesin';") or die(mysqli_error($con));
+	$treshold = mysqli_fetch_array($sql_treshold);
 }
 
-$sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin` = '" . $mesin . "' AND `Date_Time` = '" . $waktuTerakhir . "'";
-$query = mysqli_query($con, $sql);
-$data = mysqli_fetch_array($query);
-$sql_treshold = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE `status` = '1' && `ID_mesin` = '" . $mesin . "';") or die(mysqli_error($con));
-$treshold = mysqli_fetch_array($sql_treshold);
 
 
 ?>
@@ -67,18 +83,18 @@ $treshold = mysqli_fetch_array($sql_treshold);
 						?>
 					</select>
 					<button type='submit' class="btn btn-primary">Submit</button>
-					<!-- <a href="datajson.php" target="blank" class="btn btn-primary">Lihat Json</a> -->
+					<a href="datajson.php" target="blank" class="btn btn-primary">Lihat Json</a>
 				</form>
 				<br>
 			</div>
 		</div>
 		<div class="col-lg-6">
 			<div style="float: right;">
-				<form action='' method="GET" class="form-inline">
+				<div class="form-inline">
 					<span>Pilih Tanggal</span>
-					<input type="date" class="form-control" name="waktu" value="<?= $getTime; ?>" required>
-					<button type='submit' class="btn btn-primary">Submit</button>
-				</form>
+					<input type="date" class="form-control" name="waktu" id="waktu" value="<?= $getTime; ?>" required>
+					<button type='submit' class="btn btn-primary" onclick="getData(document.getElementById('waktu').value)">Submit</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -185,17 +201,17 @@ $treshold = mysqli_fetch_array($sql_treshold);
 			</div <div style="float: right;">
 			<table>
 				<?php
-				// $sql_mesin = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "'") or die (mysqli_error($con));
+				// $sql_mesin = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='$mesin'") or die (mysqli_error($con));
 				// $data = mysqli_fetch_array($sql_mesin);
 				// $power = $data['Power'];
 
-				$datamesinready = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "' AND Power>='" . $treshold['th_mesin_ready'] . "' and Power<='" . $treshold['th_spindel_on'] . "'") or die(mysqli_error($con));
+				$datamesinready = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='$mesin' AND Power>='" . $treshold['th_mesin_ready'] . "' AND Power<='" . $treshold['th_spindel_on'] . "'") or die(mysqli_error($con));
 				$jmlmesinready = mysqli_num_rows($datamesinready);
 
-				$dataspindelon = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "' AND Power>='" . $treshold['th_spindel_on'] . "' and Power<='" . $treshold['th_cutting'] . "'") or die(mysqli_error($con));
+				$dataspindelon = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='$mesin' AND Power>='" . $treshold['th_spindel_on'] . "' and Power<='" . $treshold['th_cutting'] . "'") or die(mysqli_error($con));
 				$jmlspindelon = mysqli_num_rows($dataspindelon);
 
-				$datacutting = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='" . $mesin . "' AND Power>='" . $treshold['th_cutting'] . "'") or die(mysqli_error($con));
+				$datacutting = mysqli_query($con, "SELECT * FROM tabel_monitoring WHERE `ID_mesin`='$mesin' AND Power>='" . $treshold['th_cutting'] . "'") or die(mysqli_error($con));
 				$jmlcutting = mysqli_num_rows($datacutting);
 				?>
 				</tr>
@@ -230,6 +246,10 @@ $treshold = mysqli_fetch_array($sql_treshold);
 <script src="../assets/highcharts/accessibility.js"></script>
 
 <script type="text/javascript">
+	function getData(a){
+		window.location.href="index.php?waktu="+a;
+	}
+
 	Highcharts.chart('data_monitoring', {
 		chart: {
 			type: 'spline',
