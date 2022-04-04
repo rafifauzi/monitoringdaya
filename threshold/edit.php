@@ -13,6 +13,13 @@
                     $id = $_GET['id'];
                     $sql = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE nomor = '$id'") or die (mysqli_error($conn));
                     $data = mysqli_fetch_array($sql);
+                    if ($data['status']=='1') {
+                        $selected1='';
+                        $selected2='selected';
+                    }else{
+                        $selected1='selected';
+                        $selected2='';
+                    }
                 ?>
                 <form action ="proses.php" method ="post">
                     <div class = "form-group">
@@ -28,9 +35,18 @@
                         <label for = "th_cutting">TH Cutting</label>
                         <input type = "text" name="th_cutting" value="<?=$data['th_cutting']?>" id="th_cutting" class="form-control" required>
                     </div> 
+                    <div class = "form-group">
+                        <label for = "th_cutting">TH Status</label>
+                        <select name="status" class="form-control" required>
+                            <option value="0" <?=$selected1;?>>Tidak Aktif</option>
+                            <option value="1" <?=$selected2;?>>Aktif</option>
+                        </select>
+                    </div> 
+                    
                     <div class = "form-group pull-right">
                         <input type = "submit" name="edit" value="Simpan" class="btn btn-success">
                     </div>
+
                 </form> 
             </div>
         </div>

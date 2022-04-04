@@ -18,9 +18,6 @@ if (isset($_GET['waktu'])) {
 		echo "<script>alert('Data Tidak Ada'); window.location.replace('".base_url('dashboard')."');</script>";	
 	}
 
-	
-	
-
 	$getTimeMonitoring = mysqli_query($con, "SELECT MAX(Date_Time) as 'lastTime' FROM tabel_monitoring WHERE LEFT(Date_Time, 10)='$getTime' AND `ID_mesin`='1'");
 	$timeMonitoring = mysqli_fetch_array($getTimeMonitoring);
 	$waktuTerakhir = $timeMonitoring['lastTime'];
@@ -31,7 +28,8 @@ if (isset($_GET['waktu'])) {
 	$sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin` = '$mesin' AND `Date_Time` = '$waktuTerakhir'";
 	$query = mysqli_query($con, $sql);
 	$data = mysqli_fetch_array($query);
-	$sql_treshold = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE `status` = '1' && `ID_mesin` = '$mesin';") or die(mysqli_error($con));
+
+	$sql_treshold = mysqli_query($con, "SELECT * FROM `tabel_treshold` WHERE status='1'") or die(mysqli_error($con));
 	$treshold = mysqli_fetch_array($sql_treshold);
 	
 
@@ -53,8 +51,11 @@ if (isset($_GET['waktu'])) {
 	$sql = "SELECT * FROM tabel_monitoring WHERE `ID_mesin` = '$mesin' AND `Date_Time` = '$waktuTerakhir'";
 	$query = mysqli_query($con, $sql);
 	$data = mysqli_fetch_array($query);
-	$sql_treshold = mysqli_query($con, "SELECT * FROM tabel_treshold WHERE `status` = '1' && `ID_mesin` = '$mesin';") or die(mysqli_error($con));
+
+	$sql_treshold = mysqli_query($con, "SELECT * FROM `tabel_treshold` WHERE status='1'") or die(mysqli_error($con));
 	$treshold = mysqli_fetch_array($sql_treshold);
+
+	// echo $treshold['nomor']." ".$treshold['th_mesin_ready']." ".$treshold['th_spindel_on']." ".$treshold['th_cutting'];  
 }
 
 
@@ -83,7 +84,7 @@ if (isset($_GET['waktu'])) {
 						?>
 					</select>
 					<button type='submit' class="btn btn-primary">Submit</button>
-					<a href="datajson.php" target="blank" class="btn btn-primary">Lihat Json</a>
+					<!-- <a href="datajson.php" target="blank" class="btn btn-primary">Lihat Json</a> -->
 				</form>
 				<br>
 			</div>
@@ -239,11 +240,11 @@ if (isset($_GET['waktu'])) {
 </div>
 
 
-<script src="../assets/highcharts/highcharts.js"></script>
-<script src="../assets/highcharts/series-label.js"></script>
-<script src="../assets/highcharts/exporting.js"></script>
-<script src="../assets/highcharts/export-data.js"></script>
-<script src="../assets/highcharts/accessibility.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
 <script type="text/javascript">
 	function getData(a){
@@ -253,17 +254,13 @@ if (isset($_GET['waktu'])) {
 	Highcharts.chart('data_monitoring', {
 		chart: {
 			type: 'spline',
-			scrollablePlotArea: {
-				minWidth: 600,
-				// scrollPositionX: 1
-			},
 			renderTo: 'container',
 			// zoomType: 'xy',
 			// alignTicks: false		
 
 		},
 		title: {
-			text: 'Machine Power Consumption Monitoring Pada Tanggal ',
+			text: 'Machine Power Consumption Monitoring Pada Tanggal <?="<b>".date("d-m-Y", strtotime(substr($waktuTerakhir,0,10)))."<b>";?> ',
 			align: 'center'
 		},
 		subtitle: {
@@ -314,7 +311,8 @@ if (isset($_GET['waktu'])) {
 			}]
 		}],
 		tooltip: {
-			valueSuffix: '{value} W'
+			valueSuffix: '{value} W',
+			pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'
 		},
 		plotOptions: {
 			spline: {
